@@ -1,7 +1,6 @@
 /**
  * Router utility for managing clean, shareable permalinks across Cantor Yakov's Classroom.
- * Supports both clean path routes (/torah/vayera, /catch, /heroes/yael, /explorer/alef)
- * and hash fallbacks (/#/torah/vayera).
+ * Configured for Hash Routing with all lookup maps and links restored.
  */
 
 import { Curriculum, DownloadsTab, GameMode, JewishStudiesMode, LetterData } from '../types';
@@ -10,13 +9,14 @@ import { ALL_54_PARASHOT } from '../data/parashotData';
 import { BIBLE_HEROES_DATA, HOLIDAYS_DATA } from '../data/jewishStudiesData';
 
 export function slugify(text: string): string {
+  if (!text) return '';
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // remove diacritics
-    .replace(/['’'"]/g, '') // remove apostrophes
-    .replace(/[^a-z0-9]+/g, '-') // replace non-alphanumeric with hyphen
-    .replace(/^-+|-+$/g, ''); // trim hyphens
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’'"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 export interface RouteState {
@@ -36,9 +36,9 @@ export interface RouteState {
 // Pre-built lookup dictionaries
 const PARASHA_SLUG_MAP = new Map<string, typeof ALL_54_PARASHOT[0]>();
 ALL_54_PARASHOT.forEach((p) => {
+  if (!p || !p.nameEn) return;
   const slug = slugify(p.nameEn);
   PARASHA_SLUG_MAP.set(slug, p);
-  // Also map transliteration if different
   if (p.transliteration) {
     PARASHA_SLUG_MAP.set(slugify(p.transliteration), p);
   }
@@ -46,33 +46,32 @@ ALL_54_PARASHOT.forEach((p) => {
 
 const HERO_ID_MAP = new Map<string, typeof BIBLE_HEROES_DATA[0]>();
 BIBLE_HEROES_DATA.forEach((h) => {
+  if (!h || !h.id) return;
   HERO_ID_MAP.set(h.id, h);
   HERO_ID_MAP.set(slugify(h.id), h);
-  HERO_ID_MAP.set(slugify(h.nameEn), h);
+  if (h.nameEn) HERO_ID_MAP.set(slugify(h.nameEn), h);
 });
 
 const HOLIDAY_ID_MAP = new Map<string, typeof HOLIDAYS_DATA[0]>();
 HOLIDAYS_DATA.forEach((hol) => {
+  if (!hol || !hol.id) return;
   HOLIDAY_ID_MAP.set(hol.id, hol);
   HOLIDAY_ID_MAP.set(slugify(hol.id), hol);
-  HOLIDAY_ID_MAP.set(slugify(hol.nameEn), hol);
+  if (hol.nameEn) HOLIDAY_ID_MAP.set(slugify(hol.nameEn), hol);
 });
 
 const LETTER_ID_MAP = new Map<string, LetterData>();
 ALL_LETTERS.forEach((l) => {
+  if (!l || !l.id) return;
   LETTER_ID_MAP.set(l.id, l);
   LETTER_ID_MAP.set(slugify(l.id), l);
-  LETTER_ID_MAP.set(slugify(l.nameEn), l);
+  if (l.nameEn) LETTER_ID_MAP.set(slugify(l.nameEn), l);
 });
-// Legacy aliases support so old bookmarks and links resolve properly
+
 const daletLetter = ALL_LETTERS.find((l) => l.id === 'dalet');
-if (daletLetter) {
-  LETTER_ID_MAP.set('daled', daletLetter);
-}
+if (daletLetter) LETTER_ID_MAP.set('daled', daletLetter);
 const kofLetter = ALL_LETTERS.find((l) => l.id === 'kof');
-if (kofLetter) {
-  LETTER_ID_MAP.set('kuf', kofLetter);
-}
+if (kofLetter) LETTER_ID_MAP.set('kuf', kofLetter);
 
 // Map Hero IDs to Parasha Slugs
 export const HERO_PARASHA_LINKS: Record<string, { slug: string; nameEn: string; nameHe: string }[]> = {
@@ -107,7 +106,7 @@ export const HERO_PARASHA_LINKS: Record<string, { slug: string; nameEn: string; 
   'shifra-puah': [{ slug: 'shemot', nameEn: 'Shemot', nameHe: 'שְׁמוֹת' }],
   'moses-aaron-miriam': [
     { slug: 'shemot', nameEn: 'Shemot', nameHe: 'שְׁמוֹת' },
-    { slug: 'vaeira', nameEn: 'Va\'eira', nameHe: 'וָאֵרָא' },
+    { slug: 'vaeira', nameEn: "Va'eira", nameHe: 'וָאֵרָא' },
     { slug: 'bo', nameEn: 'Bo', nameHe: 'בֹּא' },
     { slug: 'beshalach', nameEn: 'Beshalach', nameHe: 'בְּשַׁלַּח' },
   ],
@@ -152,167 +151,111 @@ export const PARASHA_HERO_LINKS: Record<string, { id: string; nameEn: string; na
 };
 
 export function parseCurrentRoute(): RouteState {
-  if (typeof window === 'undefined') {
-    return { curriculum: 'hebrew', hebrewMode: 'explorer' };
-  }
-
-  const rawPath = window.location.pathname.replace(/^\/+|\/+$/g, '');
-  const hashPath = window.location.hash.replace(/^#\/?|\/+$/g, '');
-  const targetPath = hashPath || rawPath;
-
-  if (!targetPath) {
-    return { curriculum: 'hebrew', hebrewMode: 'explorer' };
-  }
-
-  const parts = targetPath.split('/').map((p) => p.trim().toLowerCase());
-  const first = parts[0];
-  const second = parts[1];
-
-  // Downloads section permalinks
-  if (first === 'downloads') {
-    let downloadsTab: DownloadsTab = 'welcome';
-    if (second === 'font') downloadsTab = 'font';
-    else if (second === 'mapofisrael') downloadsTab = 'map';
-    else if (second === 'israelrailways') downloadsTab = 'railways';
-    else if (second === 'plays') downloadsTab = 'plays';
-    else if (second === 'mixtape' || second === 'hiphopmixtape' || second === 'hip-hop-mixtape') {
-      downloadsTab = 'mixtape';
+  try {
+    if (typeof window === 'undefined') {
+      return { curriculum: 'hebrew', hebrewMode: 'explorer' };
     }
-    return { curriculum: 'downloads', downloadsTab };
-  }
 
-  // Hebrew top routes
-  if (first === 'catch') {
-    return { curriculum: 'hebrew', hebrewMode: 'catch' };
-  }
-  if (first === 'match') {
-    return { curriculum: 'hebrew', hebrewMode: 'match' };
-  }
-  if (first === 'pop' || first === 'balloons') {
-    return { curriculum: 'hebrew', hebrewMode: 'balloons' };
-  }
-  if (first === 'explorer') {
-    return { curriculum: 'hebrew', hebrewMode: 'explorer', letterId: second };
-  }
-  if (first === 'tracing') {
-    return { curriculum: 'hebrew', hebrewMode: 'tracing', letterId: second };
-  }
-  if (first === 'coloring') {
-    return { curriculum: 'hebrew', hebrewMode: 'coloring', letterId: second };
-  }
+    const hash = window.location.hash || '';
+    const hashPath = hash.replace(/^#\/?|\/+$/g, '');
+    if (!hashPath) {
+      return { curriculum: 'hebrew', hebrewMode: 'explorer' };
+    }
 
-  // Jewish Studies top routes
-  if (first === 'holidays' || first === 'calendar') {
-    return { curriculum: 'jewish_studies', jewishMode: 'holidays', holidayId: second };
-  }
-  if (first === 'torah' || first === 'parasha') {
-    return { curriculum: 'jewish_studies', jewishMode: 'torah', parashaSlug: second };
-  }
-  if (first === 'heroes' || first === 'people') {
-    return { curriculum: 'jewish_studies', jewishMode: 'heroes', heroId: second };
-  }
-  if (first === 'blessings' || first === 'prayers') {
-    return { curriculum: 'jewish_studies', jewishMode: 'blessings', blessingId: second };
-  }
-  if (first === 'mitzvot') {
-    return { curriculum: 'jewish_studies', jewishMode: 'mitzvot', mitzvahId: second };
-  }
-  if (first === 'israel') {
-    return { curriculum: 'jewish_studies', jewishMode: 'israel', placeId: second };
-  }
+    const parts = hashPath.split('/').map((p) => (p || '').trim().toLowerCase());
+    const first = parts[0];
+    const second = parts[1];
 
-  // Fallback direct alias matches (e.g., /vayera, /catch, /yael, /chanukah, /alef)
-  if (PARASHA_SLUG_MAP.has(first)) {
-    return { curriculum: 'jewish_studies', jewishMode: 'torah', parashaSlug: first };
-  }
-  if (HERO_ID_MAP.has(first)) {
-    return { curriculum: 'jewish_studies', jewishMode: 'heroes', heroId: HERO_ID_MAP.get(first)?.id || first };
-  }
-  if (HOLIDAY_ID_MAP.has(first)) {
-    return { curriculum: 'jewish_studies', jewishMode: 'holidays', holidayId: HOLIDAY_ID_MAP.get(first)?.id || first };
-  }
-  if (LETTER_ID_MAP.has(first)) {
-    return { curriculum: 'hebrew', hebrewMode: 'explorer', letterId: LETTER_ID_MAP.get(first)?.id || first };
-  }
+    if (first === 'downloads') {
+      let downloadsTab: DownloadsTab = 'welcome';
+      if (second === 'font') downloadsTab = 'font';
+      else if (second === 'mapofisrael') downloadsTab = 'map';
+      else if (second === 'israelrailways') downloadsTab = 'railways';
+      else if (second === 'plays') downloadsTab = 'plays';
+      else if (second === 'mixtape' || second === 'hiphopmixtape' || second === 'hip-hop-mixtape') {
+        downloadsTab = 'mixtape';
+      }
+      return { curriculum: 'downloads', downloadsTab };
+    }
 
-  return { curriculum: 'hebrew', hebrewMode: 'explorer' };
+    if (first === 'catch') return { curriculum: 'hebrew', hebrewMode: 'catch' };
+    if (first === 'match') return { curriculum: 'hebrew', hebrewMode: 'match' };
+    if (first === 'pop' || first === 'balloons') return { curriculum: 'hebrew', hebrewMode: 'balloons' };
+    if (first === 'explorer') return { curriculum: 'hebrew', hebrewMode: 'explorer', letterId: second };
+    if (first === 'tracing') return { curriculum: 'hebrew', hebrewMode: 'tracing', letterId: second };
+    if (first === 'coloring') return { curriculum: 'hebrew', hebrewMode: 'coloring', letterId: second };
+
+    if (first === 'holidays' || first === 'calendar') return { curriculum: 'jewish_studies', jewishMode: 'holidays', holidayId: second };
+    if (first === 'torah' || first === 'parasha') return { curriculum: 'jewish_studies', jewishMode: 'torah', parashaSlug: second };
+    if (first === 'heroes' || first === 'people') return { curriculum: 'jewish_studies', jewishMode: 'heroes', heroId: second };
+    if (first === 'blessings' || first === 'prayers') return { curriculum: 'jewish_studies', jewishMode: 'blessings', blessingId: second };
+    if (first === 'mitzvot') return { curriculum: 'jewish_studies', jewishMode: 'mitzvot', mitzvahId: second };
+    if (first === 'israel') return { curriculum: 'jewish_studies', jewishMode: 'israel', placeId: second };
+
+    if (PARASHA_SLUG_MAP.has(first)) return { curriculum: 'jewish_studies', jewishMode: 'torah', parashaSlug: first };
+    if (HERO_ID_MAP.has(first)) return { curriculum: 'jewish_studies', jewishMode: 'heroes', heroId: HERO_ID_MAP.get(first)?.id || first };
+    if (HOLIDAY_ID_MAP.has(first)) return { curriculum: 'jewish_studies', jewishMode: 'holidays', holidayId: HOLIDAY_ID_MAP.get(first)?.id || first };
+    if (LETTER_ID_MAP.has(first)) return { curriculum: 'hebrew', hebrewMode: 'explorer', letterId: LETTER_ID_MAP.get(first)?.id || first };
+
+    return { curriculum: 'hebrew', hebrewMode: 'explorer' };
+  } catch (err) {
+    console.error('Route parsing fallback triggered:', err);
+    return { curriculum: 'hebrew', hebrewMode: 'explorer' };
+  }
 }
 
-export function buildUrlForState(state: {
-  curriculum: Curriculum;
-  hebrewMode?: GameMode;
-  jewishMode?: JewishStudiesMode;
-  downloadsTab?: DownloadsTab;
-  letterId?: string;
-  parashaSlug?: string;
-  heroId?: string;
-  holidayId?: string;
-  blessingId?: string;
-  mitzvahId?: string;
-  placeId?: string;
-}): string {
-  if (state.curriculum === 'downloads') {
-    switch (state.downloadsTab) {
-      case 'font':
-        return '/downloads/font';
-      case 'map':
-        return '/downloads/mapofisrael';
-      case 'railways':
-        return '/downloads/israelrailways';
-      case 'plays':
-        return '/downloads/plays';
-      case 'mixtape':
-        return '/downloads/mixtape';
-      case 'welcome':
-      default:
-        return '/downloads';
+export function buildUrlForState(state: RouteState): string {
+  try {
+    if (state.curriculum === 'downloads') {
+      switch (state.downloadsTab) {
+        case 'font': return '/downloads/font';
+        case 'map': return '/downloads/mapofisrael';
+        case 'railways': return '/downloads/israelrailways';
+        case 'plays': return '/downloads/plays';
+        case 'mixtape': return '/downloads/mixtape';
+        case 'welcome':
+        default: return '/downloads';
+      }
     }
-  }
-  if (state.curriculum === 'hebrew') {
-    switch (state.hebrewMode) {
-      case 'catch':
-        return '/catch';
-      case 'match':
-        return '/match';
-      case 'balloons':
-        return '/pop';
-      case 'tracing':
-        return state.letterId ? `/tracing/${state.letterId}` : '/tracing';
-      case 'coloring':
-        return state.letterId ? `/coloring/${state.letterId}` : '/coloring';
-      case 'explorer':
-      default:
-        return state.letterId ? `/explorer/${state.letterId}` : '/explorer';
+    if (state.curriculum === 'hebrew') {
+      switch (state.hebrewMode) {
+        case 'catch': return '/catch';
+        case 'match': return '/match';
+        case 'balloons': return '/pop';
+        case 'tracing': return state.letterId ? `/tracing/${state.letterId}` : '/tracing';
+        case 'coloring': return state.letterId ? `/coloring/${state.letterId}` : '/coloring';
+        case 'explorer':
+        default: return state.letterId ? `/explorer/${state.letterId}` : '/explorer';
+      }
+    } else {
+      switch (state.jewishMode) {
+        case 'torah': return state.parashaSlug ? `/torah/${state.parashaSlug}` : '/torah';
+        case 'heroes': return state.heroId ? `/heroes/${state.heroId}` : '/heroes';
+        case 'holidays': return state.holidayId ? `/calendar/${state.holidayId}` : '/calendar';
+        case 'blessings': return state.blessingId ? `/blessings/${state.blessingId}` : '/blessings';
+        case 'mitzvot': return state.mitzvahId ? `/mitzvot/${state.mitzvahId}` : '/mitzvot';
+        case 'israel': return state.placeId ? `/israel/${state.placeId}` : '/israel';
+        default: return '/calendar';
+      }
     }
-  } else {
-    switch (state.jewishMode) {
-      case 'torah':
-        return state.parashaSlug ? `/torah/${state.parashaSlug}` : '/torah';
-      case 'heroes':
-        return state.heroId ? `/heroes/${state.heroId}` : '/heroes';
-      case 'holidays':
-        return state.holidayId ? `/calendar/${state.holidayId}` : '/calendar';
-      case 'blessings':
-        return state.blessingId ? `/blessings/${state.blessingId}` : '/blessings';
-      case 'mitzvot':
-        return state.mitzvahId ? `/mitzvot/${state.mitzvahId}` : '/mitzvot';
-      case 'israel':
-        return state.placeId ? `/israel/${state.placeId}` : '/israel';
-      default:
-        return '/calendar';
-    }
+  } catch {
+    return '/explorer';
   }
 }
 
 export function pushRouteUrl(path: string, replace = false) {
-  if (typeof window === 'undefined') return;
-  const currentPath = window.location.pathname + window.location.search;
-  if (currentPath === path && !window.location.hash) return;
+  try {
+    if (typeof window === 'undefined') return;
+    const formattedHash = '#' + (path.startsWith('/') ? path : '/' + path);
+    if (window.location.hash === formattedHash) return;
 
-  if (replace) {
-    window.history.replaceState({}, '', path);
-  } else {
-    window.history.pushState({}, '', path);
+    if (replace) {
+      window.history.replaceState(null, '', formattedHash);
+    } else {
+      window.history.pushState(null, '', formattedHash);
+    }
+  } catch (err) {
+    console.error('Error pushing route URL:', err);
   }
 }
 
