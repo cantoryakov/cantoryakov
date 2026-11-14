@@ -1,0 +1,638 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Akoderf', sans-serif;
+  --font-weight-black: 900;
+  --font-weight-extrabold: 700;
+}
+
+@font-face {
+  font-family: 'Akoderf';
+  src: url('/Akoderf-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Akoderf';
+  src: url('/Akoderf-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Akoderf';
+  src: url('/Akoderf-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-black {
+  font-weight: 900 !important;
+}
+
+html, body, button, input, select, textarea {
+  font-family: 'Akoderf', sans-serif !important;
+}
+
+html {
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
+}
+
+/* Ensure only the root page can ever show a scrollbar */
+*:not(html):not(body) {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+*:not(html):not(body)::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, WebKit */
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html, body {
+  font-weight: 400;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Ensure inputs have font-size at least 16px to prevent iOS Safari auto-zoom on input focus */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+body {
+  font-family: 'Akoderf', sans-serif;
+  font-weight: 400;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Ensure emphasis, headings, and strong elements have maximum weight of 700 (Akoderf Bold) */
+h1, h2, h3, h4, h5, h6, strong, b {
+  font-weight: 700;
+}
+
+/* Ensure text blocks, stories, and articles are selectable for copy & paste */
+p, h1, h2, h3, h4, h5, h6, span, blockquote, article, section, label, div {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.font-hebrew,
+[dir="rtl"],
+.hebrew-text,
+.hebrew-glyph {
+  font-family: 'Akoderf', sans-serif !important;
+}
+
+@keyframes popBurst {
+  0% {
+    transform: scale(0.5) rotate(-3deg);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.08) rotate(1deg);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(0.96) rotate(-0.5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes ringBurst {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
+.animate-pop-burst {
+  animation: popBurst 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-origin: center center;
+}
+
+/* Custom popup sizing for "גדול" and "קטן" */
+.popup-big {
+  transform: scale(1.5) !important;
+  transform-origin: bottom center !important;
+}
+
+.popup-big-bottom {
+  transform: translateX(-50%) scale(1.5) !important;
+  transform-origin: bottom center !important;
+}
+
+.popup-big-desktop {
+  transform: translateY(-50%) scale(1.5) !important;
+  transform-origin: right center !important;
+}
+
+.popup-small {
+  transform: scale(0.5) !important;
+  transform-origin: bottom center !important;
+}
+
+.popup-small-bottom {
+  transform: translateX(-50%) scale(0.5) !important;
+  transform-origin: bottom center !important;
+}
+
+.popup-small-desktop {
+  transform: translateY(-50%) scale(0.5) !important;
+  transform-origin: right center !important;
+}
+
+.animate-ring-burst {
+  animation: ringBurst 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-8px) rotate(-4deg); }
+  40% { transform: translateX(8px) rotate(4deg); }
+  60% { transform: translateX(-6px) rotate(-2deg); }
+  80% { transform: translateX(6px) rotate(2deg); }
+}
+
+.animate-card-shake {
+  animation: errorShake 0.4s ease-in-out;
+}
+
+@keyframes fallAway {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.08));
+  }
+  15% {
+    transform: translateY(-8px) rotate(-4deg) scale(1.02);
+    opacity: 1;
+  }
+  35% {
+    transform: translateY(18px) rotate(6deg) scale(0.98);
+    opacity: 0.9;
+  }
+  65% {
+    transform: translateY(85px) rotate(18deg) scale(0.88);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(160px) rotate(26deg) scale(0.72);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.animate-fall-away {
+  animation: fallAway 0.85s cubic-bezier(0.38, 0, 0.6, 1) forwards;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes flutterLeft {
+  0%, 100% {
+    transform: scaleX(1) rotate(-6deg);
+  }
+  50% {
+    transform: scaleX(0.35) rotate(4deg);
+  }
+}
+
+@keyframes flutterRight {
+  0%, 100% {
+    transform: scaleX(1) rotate(6deg);
+  }
+  50% {
+    transform: scaleX(0.35) rotate(-4deg);
+  }
+}
+
+.animate-wing-left {
+  animation: flutterLeft 0.36s ease-in-out infinite alternate;
+  transform-origin: right center;
+}
+
+.animate-wing-right {
+  animation: flutterRight 0.36s ease-in-out infinite alternate;
+  transform-origin: left center;
+}
+
+@keyframes ballWiggle {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  20% {
+    transform: rotate(-24deg) scale(1.08) translateX(-4px);
+  }
+  40% {
+    transform: rotate(24deg) scale(1.08) translateX(4px);
+  }
+  60% {
+    transform: rotate(-14deg) scale(1.04) translateX(-2px);
+  }
+  80% {
+    transform: rotate(12deg) scale(1.02) translateX(2px);
+  }
+}
+
+.animate-ball-wiggle {
+  animation: ballWiggle 0.45s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes bounceWiggleEvery5s {
+  0%, 82%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  85% {
+    transform: translateY(-8px) rotate(-12deg) scale(1.1);
+  }
+  88% {
+    transform: translateY(0) rotate(12deg) scale(1.08);
+  }
+  91% {
+    transform: translateY(-4px) rotate(-6deg) scale(1.04);
+  }
+  94% {
+    transform: translateY(0) rotate(4deg) scale(1.02);
+  }
+}
+
+.animate-bounce-wiggle {
+  animation: bounceWiggleEvery5s 5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes throwBallArc {
+  0% {
+    transform: translate(-380px, 220px) scale(0.35) rotate(0deg);
+    opacity: 0.2;
+  }
+  25% {
+    transform: translate(-260px, 60px) scale(0.85) rotate(180deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-120px, -45px) scale(1.2) rotate(360deg);
+    opacity: 1;
+  }
+  85% {
+    transform: translate(-25px, -15px) scale(1.05) rotate(480deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0) scale(1) rotate(540deg);
+    opacity: 1;
+  }
+}
+
+.animate-ball-throw {
+  animation: throwBallArc 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  transform-origin: center center;
+}
+
+@keyframes flyUpToTray {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  }
+  50% {
+    transform: translate(calc(var(--target-x) * 0.5), calc(var(--target-y) * 0.5 - 10px)) scale(1.05) rotate(-2deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(var(--target-x), var(--target-y)) scale(0.85) rotate(0deg);
+    opacity: 0.2;
+  }
+}
+
+.animate-fly-to-tray {
+  animation: flyUpToTray 0.45s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes spinReverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 0.75s linear infinite;
+}
+
+/* Dedicated High-Quality Print Styles for Coloring Sheets */
+@media print {
+  /* Hide all interactive UI elements, modals, navbars, and backgrounds */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Expose ONLY the printable coloring sheet container */
+  #printable-coloring-sheet,
+  #printable-coloring-sheet * {
+    visibility: visible !important;
+  }
+
+  /* Reset positioning to fill a standard 8.5" x 11" page cleanly */
+  #printable-coloring-sheet {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0 !important;
+    padding: 3rem 2rem !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    z-index: 99999 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: letter portrait;
+    margin: 0;
+  }
+}
+
+@keyframes transitionFadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-curriculum-transition {
+  animation: transitionFadeSlide 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Custom Curriculum Switcher and Page Animations */
+.curriculum-pill-transition {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1.15);
+}
+
+@keyframes bookOpen {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-10deg) scale(1.22);
+  }
+  60% {
+    transform: rotate(5deg) scale(1.1);
+  }
+}
+
+.animate-book-wiggle {
+  animation: bookOpen 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  display: inline-block;
+  transform-origin: center center;
+}
+
+@keyframes starSpinPulse {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  40% {
+    transform: rotate(180deg) scale(1.3);
+  }
+  75% {
+    transform: rotate(290deg) scale(0.95);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.animate-star-spin {
+  animation: starSpinPulse 0.7s cubic-bezier(0.34, 1.56, 0.64, 1.1) forwards;
+  display: inline-block;
+  transform-origin: center center;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px) scale(0.97);
+    filter: blur(4px);
+  }
+  70% {
+    transform: translateX(4px) scale(1.01);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: none;
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(40px) scale(0.97);
+    filter: blur(4px);
+  }
+  70% {
+    transform: translateX(-4px) scale(1.01);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: none;
+  }
+}
+
+.animate-slide-from-left {
+  animation: slideInFromLeft 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-slide-from-right {
+  animation: slideInFromRight 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes bgTransitionPulse {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+.animate-bg-pulse-ripple {
+  animation: bgTransitionPulse 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes letterBounce1 {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1) rotate(0deg); }
+  33% { transform: translateY(0) translateX(-3px) scale(1.05, 0.95) rotate(-5deg); }
+  66% { transform: translateY(0) translateX(3px) scale(0.95, 1.05) rotate(5deg); }
+}
+
+@keyframes letterSquashStretch1 {
+  0%, 100% { transform: translateY(0) scale(1, 1) rotate(0deg); }
+  33% { transform: translateY(0) scale(1.08, 0.92) rotate(-4deg); }
+  66% { transform: translateY(0) scale(0.92, 1.08) rotate(4deg); }
+}
+
+@keyframes letterWiggleWobble1 {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(0) rotate(-6deg) scale(1.03, 0.97); }
+  50% { transform: translateY(0) rotate(6deg) scale(0.97, 1.03); }
+  75% { transform: translateY(0) rotate(-3deg) scale(1.01, 0.99); }
+}
+
+@keyframes letterDynamicSpinBounce {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  40% { transform: translateY(0) scale(1.06, 0.94) rotate(-8deg); }
+  80% { transform: translateY(0) scale(0.94, 1.06) rotate(8deg); }
+}
+
+/* Custom Hardware Fader Thumb for Length Slider - Mobile & Touch Optimized */
+input[type="range"].fader-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 44px;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="range"].fader-range::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 12px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+input[type="range"].fader-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 38px;
+  background: #d97706; /* amber-600 */
+  border: 2px solid #78350f; /* amber-900 */
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  margin-top: -13px; /* Centers thumb vertically relative to track */
+}
+
+input[type="range"].fader-range::-moz-range-track {
+  width: 100%;
+  height: 12px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+input[type="range"].fader-range::-moz-range-thumb {
+  width: 28px;
+  height: 38px;
+  background: #d97706;
+  border: 2px solid #78350f;
+  border-radius: 6px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+@font-face {
+  font-family: 'GodoMaum';
+  src: url('/GodoMaum.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Match game option buttons: disable element dragging, text selection, and ensure touch-action */
+.match-option-card,
+.match-option-card * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
+}
+
+/* Global cursor hiding when a click or tap occurs until actual mouse/trackpad movement is detected */
+html.hide-cursor,
+html.hide-cursor *,
+body.hide-cursor,
+body.hide-cursor * {
+  cursor: none !important;
+}
+
+/* POP game subwindow / arena container - ensures all text and UI elements remain completely non-selectable */
+.pop-game-subwindow,
+.pop-game-subwindow * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+/* Explore view vocabulary grid items: non-selectable text/emojis, non-draggable images/icons */
+.vocab-grid-item,
+.vocab-grid-item * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.vocab-grid-item img,
+.vocab-grid-item svg,
+.vocab-grid-item span {
+  -webkit-user-drag: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+

@@ -1,0 +1,6 @@
+{
+  "name": "Cantor Yakov’s Classroom",
+  "description": "Interactive Hebrew alphabet learning adventure for kindergarten children with letter tracing, phonics, balloon popping, and word matching.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

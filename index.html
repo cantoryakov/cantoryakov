@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="preload" href="/Akoderf-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/Akoderf-Bold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/Akoderf-Black.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2">
+<link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" href="/catch-and-train-logo.webp" as="image" type="image/webp">
+    <link rel="preload" href="/mappy.svg" as="image" type="image/svg+xml">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+    <script>
+      // Prevent pinch to zoom on iOS and mobile browsers
+      document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+      document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+      document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+      document.addEventListener('touchmove', function(e) {
+        if (e.touches && e.touches.length > 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    </script>
+    <title>Cantor Yakov’s Classroom</title>
+    <meta name="description" content="Interactive Hebrew alphabet learning adventure for children with letter tracing, phonics, balloon popping, and word matching." />
+    <meta property="og:title" content="Cantor Yakov’s Classroom" />
+    <meta property="og:description" content="Interactive Hebrew alphabet learning adventure for American kindergarten children with letter tracing, phonics, balloon popping, and word matching." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="shortcut icon" href="/favicon-32x32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Cantor Yakov" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="095d9606-225d-48ea-8761-942136d0a892"></script>
+    <style>
+      dialog.video-modal[open] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        width: 95vw !important;
+        max-width: 1400px !important;
+        height: auto !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        margin: auto !important;
+        position: fixed !important;
+        inset: 0 !important;
+      }
+      dialog.video-modal::backdrop {
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(4px);
+      }
+      .video-modal-container {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        background: transparent;
+        margin: auto;
+      }
+      .video-modal-header {
+        display: flex !important;
+        justify-content: flex-end !important;
+        width: 100% !important;
+        margin-bottom: 12px !important;
+        height: auto !important;
+      }
+      .video-modal-player-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #000;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      #modal-video-player {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #000;
+        outline: none;
+        border: none;
+      }
+      #close-modal-btn {
+        position: static !important;
+        top: auto !important;
+        right: auto !important;
+        z-index: 9999 !important;
+        background: rgba(0, 0, 0, 0.8) !important;
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        border-radius: 50% !important;
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 28px !important;
+        line-height: 40px !important;
+        text-align: center !important;
+        cursor: pointer !important;
+        transition: background 0.2s, transform 0.2s !important;
+        box-shadow: none !important;
+        outline: none !important;
+        -webkit-tap-highlight-color: transparent !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      #close-modal-btn:hover {
+        background: rgba(0, 0, 0, 1) !important;
+        transform: scale(1.08) !important;
+        border-color: rgba(255, 255, 255, 0.6) !important;
+      }
+      #close-modal-btn:focus,
+      #close-modal-btn:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+    </style>
+  </head>
+  <body class="bg-amber-50/50 text-slate-800 antialiased font-sans overflow-x-hidden">
+    <div id="root"></div>
+    
+    <dialog id="video-modal" class="video-modal">
+      <div class="video-modal-container">
+        <div class="video-modal-header">
+          <button id="close-modal-btn" type="button" aria-label="Close video">&times;</button>
+        </div>
+        <div class="video-modal-player-wrapper">
+          <video id="modal-video-player" controls playsinline preload="auto">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      function openVideoModal(activeLetter) {
+        const modal = document.getElementById('video-modal');
+        const videoPlayer = document.getElementById('modal-video-player');
+        if (!modal || !videoPlayer) return;
+
+        const letterChar = activeLetter && typeof activeLetter === 'object' ? (activeLetter.letter || activeLetter.char || activeLetter.symbol || activeLetter.hebrew) : activeLetter;
+        const videoUrl = `https://res.cloudinary.com/fn4r1p1x/video/upload/${encodeURIComponent(letterChar)}.mp4`;
+        console.log("Loading letter video URL:", videoUrl);
+        videoPlayer.src = videoUrl;
+        videoPlayer.load();
+        modal.showModal();
+        document.getElementById('close-modal-btn')?.blur();
+        videoPlayer.play().catch(err => console.warn("Autoplay blocked:", err));
+      }
+
+      function closeVideoModal() {
+        const modal = document.getElementById('video-modal');
+        const videoPlayer = document.getElementById('modal-video-player');
+        if (!videoPlayer || !modal) return;
+
+        videoPlayer.pause();
+        try {
+          videoPlayer.currentTime = 0;
+        } catch (e) {}
+        videoPlayer.removeAttribute('src');
+        videoPlayer.load();
+        modal.close();
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('video-modal');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const container = modal ? modal.querySelector('.video-modal-container') : null;
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', closeVideoModal);
+        }
+
+        if (modal) {
+          modal.addEventListener('click', (event) => {
+            // Close if click is directly on the dialog backdrop (outside the inner content container)
+            if (container && !container.contains(event.target)) {
+              closeVideoModal();
+            }
+          });
+
+          modal.addEventListener('cancel', (e) => {
+            e.preventDefault();
+            closeVideoModal();
+          });
+        }
+      });
+
+      window.openVideoModal = openVideoModal;
+      window.closeVideoModal = closeVideoModal;
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
