@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import { RotateCcw, ZoomIn } from 'lucide-react';
 
 interface ZoomableSvgFrameProps {
@@ -171,6 +171,21 @@ function clampTransform(
   };
 }
 
+function scrollVerticalTarget(startEl: HTMLElement, dy: number): void {
+  if (dy === 0) return;
+  let p: HTMLElement | null = startEl.parentElement;
+  while (p && p !== document.documentElement && p !== document.body) {
+    const oy = window.getComputedStyle(p).overflowY;
+    if ((oy === 'auto' || oy === 'scroll' || oy === 'overlay') && p.scrollHeight > p.clientHeight + 1) {
+      const before = p.scrollTop;
+      p.scrollTop += dy;
+      if (p.scrollTop !== before) return;
+    }
+    p = p.parentElement;
+  }
+  window.scrollBy(0, dy);
+}
+
 export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
   src,
   alt,
@@ -178,6 +193,7 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
   children,
 }) => {
   const instancePrefixRef = useRef<string>(`zsvg_${nextInstanceCounter++}_`);
+  const frameRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgMountRef = useRef<HTMLDivElement | null>(null);
   const svgElRef = useRef<SVGSVGElement | null>(null);
@@ -195,7 +211,6 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
   const [isZoomed, setIsZoomed] = useState(false);
   const [isAtMaxScale, setIsAtMaxScale] = useState(false);
   const [isDraggingMouse, setIsDraggingMouse] = useState(false);
-  const [stickyBottomOffset, setStickyBottomOffset] = useState(0);
   const stickyBottomOffsetRef = useRef(0);
 
   const touchMovedRef = useRef(false);
@@ -353,6 +368,73 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
     [syncDom, scheduleViewBoxCommit]
   );
 
+  const getEffectiveViewportBottom = useCallback((el: HTMLElement): number => {
+    let visibleBottom = window.innerHeight || document.documentElement.clientHeight;
+    if (window.visualViewport) {
+      visibleBottom = Math.min(
+        visibleBottom,
+        window.visualViewport.offsetTop + window.visualViewport.height
+      );
+    }
+
+    let ancestor = el.parentElement;
+    while (ancestor && ancestor !== document.documentElement && ancestor !== document.body) {
+      const style = window.getComputedStyle(ancestor);
+      const oy = style.overflowY;
+      if (oy === 'auto' || oy === 'scroll' || oy === 'overlay') {
+        if (ancestor.scrollHeight > ancestor.clientHeight + 1) {
+          visibleBottom = Math.min(visibleBottom, ancestor.getBoundingClientRect().bottom);
+        }
+      }
+      ancestor = ancestor.parentElement;
+    }
+
+    const nav = document.querySelector('nav[aria-label="App Navigation"]');
+    let navObstruction = 0;
+    if (nav) {
+      const viewportH = window.innerHeight || document.documentElement.clientHeight;
+      const navRect = nav.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      let topEdge = Math.min(viewportH, navRect.top);
+
+      const toggleBtn = nav.querySelector('button[aria-label*="navigation bar"]');
+      if (toggleBtn) {
+        const btnRect = toggleBtn.getBoundingClientRect();
+        const controlsLeft = elRect.right - 110;
+        const controlsRight = elRect.right;
+        if (controlsRight >= btnRect.left - 6 && controlsLeft <= btnRect.right + 6) {
+          topEdge = Math.min(topEdge, btnRect.top);
+        }
+      }
+
+      navObstruction = Math.max(0, Math.ceil(viewportH - topEdge));
+    }
+
+    stickyBottomOffsetRef.current = navObstruction;
+    return visibleBottom - navObstruction;
+  }, []);
+
+  const updateControlsPosition = useCallback(() => {
+    const frame = frameRef.current;
+    const controls = controlsRef.current;
+    if (!frame || !controls) return;
+
+    const rect = frame.getBoundingClientRect();
+    if (rect.height <= 0) return;
+
+    const effectiveBottom = getEffectiveViewportBottom(frame);
+    const controlsH = controls.offsetHeight || 30;
+    const pad = framed ? 11 : 10;
+
+    const desiredBottom = effectiveBottom - pad - rect.top;
+    const minBottom = Math.min(rect.height - pad, pad + controlsH);
+    const maxBottom = Math.max(minBottom, rect.height - pad);
+    const clampedBottom = Math.max(minBottom, Math.min(maxBottom, desiredBottom));
+    const topPx = Math.round(clampedBottom - controlsH);
+
+    controls.style.top = `${topPx}px`;
+  }, [framed, getEffectiveViewportBottom]);
+
   const zoomByFactorAtCenter = useCallback(
     (factor: number) => {
       const container = containerRef.current;
@@ -363,8 +445,7 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
 
       const rect = container.getBoundingClientRect();
       const viewportW = window.innerWidth || document.documentElement.clientWidth;
-      const viewportH =
-        (window.innerHeight || document.documentElement.clientHeight) - stickyBottomOffsetRef.current;
+      const viewportH = getEffectiveViewportBottom(container);
 
       const visibleLeft = Math.max(0, Math.min(width, -rect.left));
       const visibleRight = Math.max(0, Math.min(width, viewportW - rect.left));
@@ -377,70 +458,61 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
       const nextScale = transformRef.current.scale * factor;
       zoomAtPoint(nextScale, pointX, pointY, true);
     },
-    [zoomAtPoint]
+    [zoomAtPoint, getEffectiveViewportBottom]
   );
 
   const handleReset = useCallback(() => {
     syncDom({ scale: 1, tx: 0, ty: 0 }, true);
   }, [syncDom]);
 
-  // Keep sticky bottom offset clear of any fixed bottom app navigation bar (0px in Downloads)
-  useEffect(() => {
-    let settleTimer: number | null = null;
+  // Pin zoom controls to the lowest visible part of the viewport within the SVG frame
+  useLayoutEffect(() => {
+    let navSettleTimer: number | null = null;
+    let animSettleTimer: number | null = null;
 
-    const updateBottomOffset = () => {
-      const nav = document.querySelector('nav[aria-label="App Navigation"]');
-      const container = containerRef.current;
-      if (!nav || !container) {
-        stickyBottomOffsetRef.current = 0;
-        setStickyBottomOffset((prev) => (prev !== 0 ? 0 : prev));
-        return;
-      }
+    updateControlsPosition();
+    animSettleTimer = window.setTimeout(updateControlsPosition, 420);
 
-      const viewportH = window.innerHeight || document.documentElement.clientHeight;
-      const navRect = nav.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      let topEdge = Math.min(viewportH, navRect.top);
-
-      const toggleBtn = nav.querySelector('button[aria-label*="navigation bar"]');
-      if (toggleBtn) {
-        const btnRect = toggleBtn.getBoundingClientRect();
-        const controlsLeft = containerRect.right - 110;
-        const controlsRight = containerRect.right;
-        if (controlsRight >= btnRect.left - 6 && controlsLeft <= btnRect.right + 6) {
-          topEdge = Math.min(topEdge, btnRect.top);
-        }
-      }
-
-      const nextOffset = Math.max(0, Math.ceil(viewportH - topEdge));
-      stickyBottomOffsetRef.current = nextOffset;
-      setStickyBottomOffset((prev) => (prev !== nextOffset ? nextOffset : prev));
+    const handleNavTransition = () => {
+      updateControlsPosition();
+      if (navSettleTimer !== null) window.clearTimeout(navSettleTimer);
+      navSettleTimer = window.setTimeout(updateControlsPosition, 350);
     };
 
-    updateBottomOffset();
+    window.addEventListener('scroll', updateControlsPosition, { passive: true, capture: true });
+    window.addEventListener('resize', updateControlsPosition, { passive: true });
+    window.addEventListener('animationend', updateControlsPosition, { passive: true });
+    window.visualViewport?.addEventListener('scroll', updateControlsPosition, { passive: true });
+    window.visualViewport?.addEventListener('resize', updateControlsPosition, { passive: true });
+
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(updateControlsPosition);
+      if (frameRef.current) observer.observe(frameRef.current);
+      if (controlsRef.current) observer.observe(controlsRef.current);
+    }
 
     const nav = document.querySelector('nav[aria-label="App Navigation"]');
-    const handleNavTransition = () => {
-      updateBottomOffset();
-      if (settleTimer !== null) window.clearTimeout(settleTimer);
-      settleTimer = window.setTimeout(updateBottomOffset, 320);
-    };
-
-    window.addEventListener('resize', updateBottomOffset);
     if (nav) {
-      nav.addEventListener('transitionend', updateBottomOffset);
+      nav.addEventListener('transitionend', updateControlsPosition);
       nav.addEventListener('click', handleNavTransition);
     }
 
     return () => {
-      if (settleTimer !== null) window.clearTimeout(settleTimer);
-      window.removeEventListener('resize', updateBottomOffset);
+      if (navSettleTimer !== null) window.clearTimeout(navSettleTimer);
+      if (animSettleTimer !== null) window.clearTimeout(animSettleTimer);
+      window.removeEventListener('scroll', updateControlsPosition, { capture: true });
+      window.removeEventListener('resize', updateControlsPosition);
+      window.removeEventListener('animationend', updateControlsPosition);
+      window.visualViewport?.removeEventListener('scroll', updateControlsPosition);
+      window.visualViewport?.removeEventListener('resize', updateControlsPosition);
+      if (observer) observer.disconnect();
       if (nav) {
-        nav.removeEventListener('transitionend', updateBottomOffset);
+        nav.removeEventListener('transitionend', updateControlsPosition);
         nav.removeEventListener('click', handleNavTransition);
       }
     };
-  }, []);
+  }, [updateControlsPosition, isZoomed, isVectorReady]);
 
   // Re-clamp and re-commit viewBox when container resizes or becomes visible
   useEffect(() => {
@@ -619,33 +691,49 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
       }
     };
 
+    const wheelTarget = frameRef.current || el;
+
     const onWheel = (e: WheelEvent) => {
-      // Support trackpad pinch-to-zoom (ctrlKey) without blocking normal page wheel scroll
-      if (!e.ctrlKey) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const rect = el.getBoundingClientRect();
-      const factor = Math.exp(-e.deltaY * 0.01);
-      zoomAtPoint(
-        transformRef.current.scale * factor,
-        e.clientX - rect.left,
-        e.clientY - rect.top,
-        false
-      );
+      if (e.ctrlKey) {
+        // Trackpad pinch-to-zoom inside the SVG frame
+        e.preventDefault();
+        e.stopPropagation();
+        const rect = el.getBoundingClientRect();
+        const factor = Math.exp(-e.deltaY * 0.01);
+        zoomAtPoint(
+          transformRef.current.scale * factor,
+          e.clientX - rect.left,
+          e.clientY - rect.top,
+          false
+        );
+        return;
+      }
+
+      // Block horizontal/diagonal trackpad swipe drift (including during bottom/top bounce)
+      // from triggering browser Back/Forward gestures while keeping vertical scroll smooth.
+      if (Math.abs(e.deltaX) > 1.5) {
+        e.preventDefault();
+        if (e.deltaY !== 0) {
+          let dy = e.deltaY;
+          if (e.deltaMode === 1) dy *= 16;
+          else if (e.deltaMode === 2) dy *= window.innerHeight || 600;
+          scrollVerticalTarget(wheelTarget, dy);
+        }
+      }
     };
 
     el.addEventListener('touchstart', onTouchStart, { passive: false });
     el.addEventListener('touchmove', onTouchMove, { passive: false });
     el.addEventListener('touchend', onTouchEnd, { passive: false });
     el.addEventListener('touchcancel', onTouchEnd, { passive: false });
-    el.addEventListener('wheel', onWheel, { passive: false });
+    wheelTarget.addEventListener('wheel', onWheel, { passive: false });
 
     return () => {
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
       el.removeEventListener('touchcancel', onTouchEnd);
-      el.removeEventListener('wheel', onWheel);
+      wheelTarget.removeEventListener('wheel', onWheel);
     };
   }, [syncDom, scheduleViewBoxCommit, zoomAtPoint]);
 
@@ -709,7 +797,7 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
   };
 
   return (
-    <div className="relative grid grid-cols-1 w-full">
+    <div ref={frameRef} className="relative w-full overscroll-x-none">
       {/* Clipped SVG & interactive overlay frame */}
       <div
         ref={containerRef}
@@ -719,7 +807,7 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
           touchAction: isZoomed ? 'none' : 'pan-y',
           WebkitTouchCallout: 'none',
         }}
-        className={`col-start-1 row-start-1 relative w-full overflow-hidden bg-white select-none ${
+        className={`relative w-full overflow-hidden overscroll-x-none bg-white select-none ${
           framed ? 'border border-stone-300' : ''
         } ${isZoomed ? (isDraggingMouse ? 'cursor-grabbing' : 'cursor-grab') : ''}`}
       >
@@ -730,6 +818,7 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
           alt={alt}
           aria-hidden={isVectorReady}
           draggable={false}
+          onLoad={updateControlsPosition}
           className={`w-full block select-none pointer-events-none origin-top-left ${
             isVectorReady ? 'invisible' : ''
           }`}
@@ -761,49 +850,40 @@ export const ZoomableSvgFrame: React.FC<ZoomableSvgFrameProps> = ({
         )}
       </div>
 
-      {/* Viewport-sticky corner zoom controls bounded strictly within the SVG frame */}
+      {/* Viewport-pinned zoom controls bounded strictly within the SVG frame */}
       <div
-        className={`col-start-1 row-start-1 flex flex-col pointer-events-none z-30 ${
-          framed ? 'm-px' : ''
-        }`}
+        ref={controlsRef}
+        style={{
+          right: framed ? '11px' : '10px',
+          touchAction: 'manipulation',
+        }}
+        className="absolute z-30 flex items-center gap-1.5"
       >
-        <div className="flex-1 min-h-0" />
-        <div
-          style={{ bottom: `${stickyBottomOffset}px` }}
-          className="sticky flex justify-end p-2.5"
-        >
-          <div
-            ref={controlsRef}
-            style={{ touchAction: 'manipulation' }}
-            className="pointer-events-auto flex items-center gap-1.5"
+        {isZoomed && (
+          <button
+            type="button"
+            onClick={handleReset}
+            aria-label="Reset zoom"
+            title="Reset zoom"
+            className="p-1.5 bg-amber-500 hover:bg-amber-600 text-white border border-amber-600 rounded-lg shadow-sm cursor-pointer transition-colors"
           >
-            {isZoomed && (
-              <button
-                type="button"
-                onClick={handleReset}
-                aria-label="Reset zoom"
-                title="Reset zoom"
-                className="p-1.5 bg-amber-500 hover:bg-amber-600 text-white border border-amber-600 rounded-lg shadow-sm cursor-pointer transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => zoomByFactorAtCenter(1.4)}
-              disabled={isAtMaxScale}
-              aria-label="Zoom in"
-              title="Zoom in"
-              className={`p-1.5 rounded-lg border shadow-sm transition-colors ${
-                !isAtMaxScale
-                  ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 cursor-pointer'
-                  : 'bg-amber-100 text-amber-400 border-amber-300 cursor-default'
-              }`}
-            >
-              <ZoomIn className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => zoomByFactorAtCenter(1.4)}
+          disabled={isAtMaxScale}
+          aria-label="Zoom in"
+          title="Zoom in"
+          className={`p-1.5 rounded-lg border shadow-sm transition-colors ${
+            !isAtMaxScale
+              ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 cursor-pointer'
+              : 'bg-amber-100 text-amber-400 border-amber-300 cursor-default'
+          }`}
+        >
+          <ZoomIn className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
