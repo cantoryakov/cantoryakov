@@ -111,7 +111,7 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
       </div>
 
       {/* Unboxed Editorial Content Directly on the Page Canvas */}
-      <article className="max-w-3xl mx-auto space-y-8 leading-relaxed">
+      <article className="downloads-content max-w-3xl mx-auto space-y-8 leading-relaxed">
         {/* ================= TAB 1: WELCOME ================= */}
         {activeTab === 'welcome' && (
           <div className="space-y-8">
@@ -246,8 +246,16 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-stone-900">
                 Map of Israel
               </h1>
-              <p className="text-base sm:text-lg text-stone-700">
-                Do you have any idea how hard it is to make a map from scratch?! You have to use a program called QGIS. Shout out to Gary Sherman for his hard work, but he did not create something that was designed for ease of use. Anyway, I managed to make this thing. It shows Israel and the surrounding countries. I actually had to manually delineate the north-east border because all of the commonly available resources for national borders blend Israel in with the UNDOF Zone, which isn&rsquo;t inside Israel. My main intention with this map project was to include the wonderful and fantastic Israel Railways network in with the usual cities and bodies of water. I labeled as many of the stations as I could! And I included a compass rose and a legend, so it looks like a real map!
+ <p className="text-base sm:text-lg text-stone-700">
+ Do you have any idea how hard it is to make a map from scratch?! You have to use a program called <a href="http://qgis.org">QGIS</a>. Shout out to Gary Sherman for his hard work, but he did not create something that was designed for ease of use. Anyway, I managed to make this thing. This map has:
+ <ul><li><b>National borders.</b> You’d think that would be simple, but it’s not! And never mind the obvious thing, that I won’t mention here. But there’s also the UNDOF Zone. Publicly available world outline databases include the UNDOF Zone, a small area of land east of the Golan Heights, as part of Israel, but Israel doesn’t claim it, and never has. It’s just a wrong thing on worldwide mapping servers. I had to manually fix the border of the Golan Heights and Syria! By dragging points around on my screen!!!</li>
+ <li>Bodies of water. Including some of the smaller rivers. This is surprisingly complicated, too, because a lot of "rivers" you see on maps of Israel are actually wadis, meaning, they're usually dry. I don't want to show things that are dry so I had to do some research on which rivers are actually wet 12 months a year!</li>
+ <li>a</li>
+ <li>a</li>
+ <li>a</li>
+ 
+ 
+ </ul>
               </p>
               <p className="text-base sm:text-md text-stone-700">
                 I had to use a lot of AI for this project. Google Gemini did not build the map or create any files for me. Rather, Gemini and I were in a constant, absolutely exhausting, back and forth, in which I took a screenshot of my project window, sent it to Gemini, and said &ldquo;What should I click on next?&rdquo; Gemini said something like, click on the tiny button that looks like a sleepy mongoose, find the seventh tab on the left, scroll way down in the control view within that window, click on the button that says &ldquo;Check this box to make the labels in your map actually show up where you want them to show up,&rdquo; click OK and press save. And then I can&rsquo;t find the sleepy mongoose button, the seventh tab on the left is actually the third tab, the checkbox isn&rsquo;t where it is supposed to be, and when I finally find the checkbox, all of my labels actually disappear entirely. Also, pressing save does nothing unless you manually tell the program to write &ldquo;scratch layers&rdquo; to disk. If you are working, and the program constantly pushes you in this direction, if you are working in &ldquo;scratch layers,&rdquo; you lose absolutely all of your progress when you quit the program, regardless of how many times you press save.
