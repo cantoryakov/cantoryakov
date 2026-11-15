@@ -1,6 +1,6 @@
 /**
  * Router utility for managing clean, shareable permalinks across Cantor Yakov's Classroom.
- * Configured for Hash Routing with all lookup maps and links restored.
+ * Configured for HTML5 History Routing (No more hashes!).
  */
 
 import { Curriculum, DownloadsTab, GameMode, JewishStudiesMode, LetterData } from '../types';
@@ -156,13 +156,14 @@ export function parseCurrentRoute(): RouteState {
       return { curriculum: 'hebrew', hebrewMode: 'explorer' };
     }
 
-    const hash = window.location.hash || '';
-    const hashPath = hash.replace(/^#\/?|\/+$/g, '');
-    if (!hashPath) {
+    // CHANGED: Read from window.location.pathname instead of hash
+    const pathname = window.location.pathname || '';
+    const cleanPath = pathname.replace(/^\/+|\/+$/g, '');
+    if (!cleanPath) {
       return { curriculum: 'hebrew', hebrewMode: 'explorer' };
     }
 
-    const parts = hashPath.split('/').map((p) => (p || '').trim().toLowerCase());
+    const parts = cleanPath.split('/').map((p) => (p || '').trim().toLowerCase());
     const first = parts[0];
     const second = parts[1];
 
@@ -246,13 +247,14 @@ export function buildUrlForState(state: RouteState): string {
 export function pushRouteUrl(path: string, replace = false) {
   try {
     if (typeof window === 'undefined') return;
-    const formattedHash = '#' + (path.startsWith('/') ? path : '/' + path);
-    if (window.location.hash === formattedHash) return;
+    // CHANGED: Push standard clean path instead of adding a '#'
+    const formattedPath = path.startsWith('/') ? path : '/' + path;
+    if (window.location.pathname === formattedPath) return;
 
     if (replace) {
-      window.history.replaceState(null, '', formattedHash);
+      window.history.replaceState(null, '', formattedPath);
     } else {
-      window.history.pushState(null, '', formattedHash);
+      window.history.pushState(null, '', formattedPath);
     }
   } catch (err) {
     console.error('Error pushing route URL:', err);
