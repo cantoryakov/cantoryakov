@@ -1,28 +1,20 @@
 <!doctype html>
 <html lang="en" dir="ltr">
   <head>
-    <script type="text/javascript">
-  // Single Page Apps for GitHub Pages redirection catcher
-  (function(l) {
-    if (l.search[1] === '/' ) {
-      var decoded = l.search.slice(1).split('&').map(function(s) { 
-        return s.replace(/~and~/g, '&')
-      }).reduce(function(acc, s) {
-        var pair = s.split('=');
-        acc[pair[0]] = decodeURIComponent(pair[1] || '');
-        return acc;
-      }, {});
-      if (decoded.p !== undefined) {
-        window.history.replaceState(null, null,
-          l.pathname.slice(0, -1) + (decoded.p || '') +
-          (decoded.q ? ('?' + decoded.q) : '') +
-          l.hash
-        );
+<script type="text/javascript">
+  // Clean SPA GitHub Pages router restoration
+  (function () {
+    var search = window.location.search;
+    if (search.indexOf('?p=') === 0 || search.indexOf('&p=') !== -1) {
+      var paramMatch = search.match(/[?&]p=([^&]*)/);
+      if (paramMatch) {
+        var decodedPath = decodeURIComponent(paramMatch[1]);
+        var remainingQuery = search.replace(/[?&]p=[^&]*/, '').replace(/^&/, '?');
+        window.history.replaceState(null, null, decodedPath + remainingQuery + window.location.hash);
       }
     }
-  }(window.location));
-</script>
-    <link rel="preload" href="/Akoderf-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  })();
+</script>    <link rel="preload" href="/Akoderf-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/Akoderf-Bold.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/Akoderf-Black.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">

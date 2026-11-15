@@ -187,6 +187,21 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
                     I&rsquo;ve written a few original &ldquo;shpiels&rdquo; for Jewish school use. You can have those, too!
                   </dd>
                 </div>
+
+                <div className="py-4 sm:grid sm:grid-cols-3 sm:gap-4 items-baseline">
+                  <dt>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectTab('mixtape')}
+                      className="text-base font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 cursor-pointer text-left"
+                    >
+                      Hip-Hop Mixtape
+                    </button>
+                  </dt>
+                  <dd className="mt-1 sm:mt-0 sm:col-span-2 text-sm sm:text-base text-stone-700">
+                    An educational hip-hop mixtape I&rsquo;m working on, rooted in Torah and traditional exegesis and set to classic 1990s and 2000s tracks.
+                  </dd>
+                </div>
               </dl>
             </section>
 
@@ -338,7 +353,7 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
                 I had to use a lot of AI for this project. Google Gemini did not build the map or create any files for me. Rather, Gemini and I were in a constant, absolutely exhausting, back and forth, in which I took a screenshot of my project window, sent it to Gemini, and said &ldquo;What should I click on next?&rdquo; Gemini said something like: Click on the tiny button that looks like a sleepy mongoose, find the seventh tab on the left, scroll way down in the control view within that window, click on the button that says &ldquo;Check this box to make the labels in your map actually show up where you want them to show up,&rdquo; click OK and press save. And then I can&rsquo;t find the sleepy mongoose button, the seventh tab on the left is actually the third tab, the checkbox isn&rsquo;t where it is supposed to be, and when I finally find the checkbox, all of my labels actually disappear entirely. Also, pressing save does nothing unless you manually tell the program to write &ldquo;scratch layers&rdquo; to disk. If you are working, and the program constantly pushes you in this direction, if you are working in &ldquo;scratch layers,&rdquo; you lose absolutely all of your progress when you quit the program, regardless of how many times you press save.
               </p>
               <p className="text-base sm:text-lg text-stone-700">
-                The full QGIS source files are available at the download link, so if you want, you can roll up your sleeves and make your own remix of this! Feel free! Have fun! Don’t use scratch layers!
+                The full QGIS source files are available at the download link, so if you want, you can roll up your sleeves and make your own remix of this! Feel free! Have fun! Don&rsquo;t use scratch layers!
               </p>
             </header>
 
@@ -435,10 +450,10 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
               </a>
             </section>
               <p className="text-base sm:text-sm text-stone-700">
-                *<b><a href="https://www.youtube.com/watch?v=cUusX1Js6R0" target="_blank" rel="noopener noreferrer" className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 transition-colors">Sesame Street: Bert And Ernie&rsquo;s Fish Call</a></b> is one of the greatest skits in media because it is at once immediately comprehensible and funny to a tiny child (I remember laughing when I was 5 years old, watching it for the first time) and also extremely strange to an adult, but also still funny. Ernie calls for fish and receives non-anthropomorphic, voiceless fish. Perfect for cooking. You can eat that kind of fish for dinner without guilt. Bert, on the other hand, calls for fish, and receives a fish, but his fish has golf ball eyes, an articulated mouth, and a comical voice. This is, yes, a fish (or maybe a small shark, but the point stands), but not a fish that can be eaten, for this fish appears to have a soul. Attempting to eat it would probably get Bert banned from the CTW studios, for moral turpitude! It&rsquo;s funny to a tiny child, it&rsquo;s also funny to an adult, but it&rsquo;s also really weird if you think about it! That&rsquo;s why it&rsquo;s so good! It is not, however, the greatest Bert and Ernie skit. That title goes to <a href="https://www.youtube.com/watch?v=JAuP6FxCOeM" target="_blank" rel="noopener noreferrer" className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 transition-colors">Ernie and Bert&rsquo;s TV Chair Battle</a>, the greatest 4 minutes in the history of entertainment. Bert (Frank Oz, the Yoda guy!) says: &ldquo;That&rsquo;s the way you&rsquo;re gonna be about it – that&rsquo;s the way you&rsquo;re gonna BE about it, Ernie – all right…&rdquo;; Ernie says, &ldquo;Oh ho. Oh ho, Bert!&rdquo;; &ldquo;Go away, go watch the window, good boy.&rdquo;; Bert imitating Ernie&rsquo;s laugh; Bert resorting to physical violence; Herry Monster, a literal blue monster, runs in from off screen, which neither Bert nor Ernie finds to be noteworthy at all, but the (nonexistent) elephant and (nonexistent) dinosaur ARE things that need to be investigated; Jerry Nelson&rsquo;s immortal &ldquo;Ha ha on you guys&rdquo;; Ernie&rsquo;s dawning realization that the fundamental problem is not the width of the chair at all, because two roommates and a monster actually can fit on it comfortably, but actually, the completely boring show that is on the TV screen; the amazing running joke of Bert&rsquo;s terrible taste in music, which is actually the last joke in the whole scene.
+                *<b><a href="https://www.youtube.com/watch?v=cUusX1Js6R0" target="_blank" rel="noopener noreferrer" className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 transition-colors">Sesame Street: Bert And Ernie&rsquo;s Fish Call</a></b> is one of the greatest skits in media because it is at once immediately comprehensible and funny to a tiny child (I remember laughing when I was 5 years old, watching it for the first time) and also extremely strange to an adult, but also still funny. Ernie calls for fish and receives non-anthropomorphic, voiceless fish. Perfect for cooking. You can eat that kind of fish for dinner without guilt. Bert, on the other hand, calls for fish, and receives a fish, but his fish has golf ball eyes, an articulated mouth, and a comical voice. This is, yes, a fish (or maybe a small shark, but the point stands), but not a fish that can be eaten, for this fish appears to have a soul. Attempting to eat it would probably get Bert banned from the CTW studios for moral turpitude! It&rsquo;s funny to a tiny child, it&rsquo;s also funny to an adult, but it&rsquo;s also really weird if you think about it! That&rsquo;s why it&rsquo;s so good! It is not, however, the greatest Bert and Ernie skit. That title goes to <a href="https://www.youtube.com/watch?v=JAuP6FxCOeM" target="_blank" rel="noopener noreferrer" className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 transition-colors">Ernie and Bert&rsquo;s TV Chair Battle</a>, the greatest 4 minutes in the history of entertainment. Bert (Frank Oz, the Yoda guy!) says: &ldquo;That&rsquo;s the way you&rsquo;re gonna be about it – that&rsquo;s the way you&rsquo;re gonna BE about it, Ernie – all right…&rdquo;; Ernie says, &ldquo;Oh ho. Oh ho, Bert!&rdquo;; &ldquo;Go away, go watch the window, good boy.&rdquo;; Bert imitating Ernie&rsquo;s laugh; Bert resorting to physical violence; Herry Monster, a literal blue monster, runs in from off screen, which neither Bert nor Ernie finds to be noteworthy at all, but the (nonexistent) elephant and (nonexistent) dinosaur ARE things that need to be investigated; Jerry Nelson&rsquo;s immortal &ldquo;Ha ha on you guys&rdquo;; Ernie&rsquo;s dawning realization that the fundamental problem is not the width of the chair at all, because two roommates and a monster actually can fit on it comfortably, but actually, the completely boring show that is on the TV screen; the amazing running joke of Bert&rsquo;s terrible taste in music, which is actually the last joke in the whole scene. The whole time, you, the viewer, are watchinig Bert&rsquo;s eyes, which are just felt circles glued to felt, but yet somehow they communicate a LOT of emotion, but how? How did they do it?? It&rsquo;s pure magic!
               </p>
               <p className="text-base sm:text-sm text-stone-700">
-                **Not only did Frank Oz, the Yoda guy, perform the best role of his lifetime as Bert in Sesame Street, but also Mark Hamill, the Luke Skywalker guy, performed the best role of his lifetime in Batman: The Animated Series (and following spinoffs, movies, and video games) as The Joker. Both the Yoda guy and the Luke Skywalker guy performed much better roles voicing ornery, eccentric characters in children&rsquo;s media, but people mostly know them for Star Wars.
+                **Not only did Frank Oz, the Yoda guy, perform the best role of his lifetime as Bert in Sesame Street, but also Mark Hamill, the Luke Skywalker guy, performed the best role of his lifetime in Batman: The Animated Series (and following spinoffs, movies, and video games) as The Joker. Both the Yoda guy and the Luke Skywalker guy performed much better roles voicing ornery, eccentric characters in children&rsquo;s media, but people mostly know them for Star Wars. What were we talking about, again?
               </p>
         
           </div>
@@ -452,16 +467,29 @@ export const DownloadsSection: React.FC<DownloadsSectionProps> = ({
                 Now That&rsquo;s What I Call T.A.N.A.C.H.
               </h1>
               <p className="text-base sm:text-lg text-stone-700">
-                I&rsquo;m working on an educational hip-hop mixtape, kind of like, but actually completely different from, but also yes, kind of like, Hamilton. Except I’m going to mix and record everything entirely myself. The tracks will be from classic 1990s and 2000s songs. There will be a lot of in-jokes for hip hop heads, but also, it will be completely educational and rooted in the Torah and traditional exegesis. I’ll give away a few of my ideas for now:
+                I&rsquo;m working on an educational hip-hop mixtape, kind of like, but actually completely different from, but also yes, kind of like, Hamilton. Except I&rsquo;m going to mix and record everything entirely myself, and nobody will ever perform this on stage in costume. At least, I doubt it. The tracks will be from classic 1990s and 2000s songs. There will be a lot of in-jokes for hip hop heads, but also, it will be completely educational and rooted in the Torah and traditional exegesis. I&rsquo;ll give away a few of my ideas for now:
               </p>
-              <ul><li>I think T.A.N.A.C.H. stands for: "Theological Anthems: New Arrangements & Classic Hits". I will generate a little marketing campaign designed to look like the original NOW music compilation CD commercial.</li>
+              <ul><li>I think T.A.N.A.C.H. stands for: &ldquo;Theological Anthems: New Arrangements & Classic Hits&rdquo;. I will generate a little marketing campaign designed to look like the original NOW music compilation CD commercial.</li>
               <li>The in-universe producer of the whole disc is Conductor Miriam, a reference to Conductor Williams. The Torah says Miriam plays percussion, which in the hip-hop sphere, is analogous to music production.</li>
-              <li>Young Avram and Sarai have a punk band called “Smashing Idols”. The title is based on Smashing Pumpkins, of course, but the musical track is actually Green Day ("Longview").</li>
-              <li>Og, King of Bashan makes an appearance. So does Bilam’s female donkey ("The Aton"),</li>
+              <li>Young Avram and Sarai have a punk band called &ldquo;Smashing Idols&rdquo;. The title is based on Smashing Pumpkins, of course, but the musical track is actually Green Day (&ldquo;Longview&rdquo;). Sarai is the drummer behind Avram singing his heart out about how dumb everyone is for worshipping fake gods. Of course there is no textual basis for Sarai playing the drums, but if Miriam can be a female drummer in the Bible, why not Sarai? I have a really layered joke in my head based on skate culture, the Bein HaBetarim chapter of the Torah, Starbucks, Richie Bucher&rsquo;s classic Green Day artwork, and Damien Hirst. It&rsquo;s a whole thing. I can&rsquo;t give it all away now though. What if someone steals my idea??</li>
+              <li>JOSEPH (all caps when you spell the man’s name) is a certain Harlem rapper I don&rsquo;t want to name because kids are listening. He does a rap about his amazing coat, his cool Egyptian wife, his elevated status in Egyptian society. &ldquo;I be that pretty son of Jacob&rdquo; is the first line of his song. If you know hip hop, you know what song that&rsquo;s referencing!</li>
+              <li>Moshe the Machine&rsquo;s solo feature will go to a beat built on the &ldquo;Shady Blues&rdquo; sample. That song has a flute, and the in-universe flautist will be Jethro, and Moshe the Machine will make a Jethro Tull reference. Also, at the end of the song, he will say &ldquo;I declare war on the Pharaoh,&rdquo; which is a Pacewon reference.</li>
+              <li>My Shirat Hayam tribute is to the tune of a certain legendary posse cut from the South. If you know, you know. There is a long rap with four verses: Moshe The Machine (as in, Conway) talking about Tzipporah; FLYPRIEST (Aaron), talking about the amazingness of his garments and jewelry; Pharaoh, drowning; and Conductor Miriam, contemplative. There will be a reference to Memphis, because Memphis is a city in Egypt, and it is also the hometown of the producers of the original track. It will take me a long time to write this track.</li>
+              <li>Og, King of Bashan makes an appearance. (He’s our only character who raps in Hebrew. He’s basically Subliminal and HaTzel combined into one). So does Bilam&rsquo;s female donkey (&ldquo;The Aton&rdquo;). So do Elisha&rsquo;s she-bears. I might try to work in Jonah&rsquo;s giant fish too, who actually already has a{' '}
+                <a
+                  href="https://www.youtube.com/watch?v=z7wdzG7aA6A"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-4 transition-colors"
+                >
+                  personality and song
+                </a>{' '}
+                in the extended CYBU (Cantor Yakov Biblical Universe).</li>
+              <li>I&rsquo;m going to try to get my dad (my real, human dad) to talk over the instrumental of &ldquo;Chazirim&rdquo; by Metropolin. This is a tribute on the one hand to Common and his Pops Rap series of tracks, on the other hand to Ofer Meiri&rsquo;s mid 2000s Israeli music project, on the other hand to the African Hebrew Israelites of Dimona, and on the other hand to Israel Railways and public transit in general. That&rsquo;s a lot of hands, isn&rsquo;t it?</li>
               </ul>
             </header>
                           <p className="text-base sm:text-lg text-stone-700">
-                That’s it for now! Check back later for more. I might actually make the music next summer.
+                That&rsquo;s it for now! Check back later for more. I might actually make the music next summer.
               </p>
 
           </div>

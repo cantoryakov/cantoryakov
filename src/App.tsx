@@ -1040,10 +1040,16 @@ onLetterCleared={handleLetterCleared}
             : 'border-sky-200/60 bg-sky-50/70 text-slate-500'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 items-center gap-3">
-          <div className="sm:text-left">
+        <div
+          className={`max-w-7xl mx-auto px-4 ${
+            isDownloadsMode
+              ? 'flex justify-center items-center'
+              : 'grid grid-cols-1 sm:grid-cols-3 items-center gap-3'
+          }`}
+        >
+          <div className={isDownloadsMode ? 'text-center text-sm sm:text-base' : 'sm:text-left'}>
             <span className="font-bold">
-              ©{' '}
+              by{' '}
               <a
                 href="mailto:yakov.hadash@gmail.com"
                 className={

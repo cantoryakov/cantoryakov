@@ -239,7 +239,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className={`text-xs sm:text-base font-black leading-tight bg-clip-text text-transparent transition-all duration-300 flex items-center gap-1.5 bg-gradient-to-r from-amber-600 to-amber-700`}
                   >
                     Classroom
-                    {devModeEnabled && (
+                    {devModeEnabled && !isDownloadsMode && (
                       <span className="px-1.5 py-0.2 text-[8px] sm:text-[9px] font-bold tracking-wider uppercase rounded-md shadow-2xs bg-amber-500 text-white select-none inline-block align-middle not-italic">
                         🔧 DEV
                       </span>
